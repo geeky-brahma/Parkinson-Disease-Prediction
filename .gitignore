@@ -135,3 +135,7 @@ dmypy.json
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Project specific
+# Uncomment the next line if you want to ignore saved models
+# models/

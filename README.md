@@ -152,9 +152,45 @@ pip install -r requirements.txt
 # Main algorithm comparison
 python algorithm_comparison.py
 
-# Individual algorithm testing
+# Individual algorithm testing (saves trained KNN model)
 python knn.py
+
+# Baseline performance testing
 python benchmark.py
+
+# Load and test saved model
+python model_loader.py
+```
+
+## 💾 Model Persistence
+
+The project includes functionality to save and load the trained KNN model:
+
+### Saving Models
+- **KNN Model Training**: Run `python knn.py` to train and automatically save the model
+- **Model Files**: Saved in `models/` directory
+  - `knn_model.pkl` - KNN model (joblib format)
+  - `scaler.pkl` - Feature scaler (joblib format)
+  - `knn_model_pickle.pkl` - KNN model (pickle format)
+  - `scaler_pickle.pkl` - Feature scaler (pickle format)
+
+### Loading and Using Saved Models
+- **Model Loader**: Use `model_loader.py` to load and test saved models
+- **Prediction Function**: Ready-to-use function for new predictions
+- **Performance Testing**: Validate model performance on test data
+
+### Example Usage
+```python
+import joblib
+
+# Load the saved model
+model = joblib.load('models/knn_model.pkl')
+scaler = joblib.load('models/scaler.pkl')
+
+# Make predictions on new data
+new_features = [119.992, 157.302, 74.997, ...]  # 23 voice features
+scaled_features = scaler.transform([new_features])
+prediction = model.predict(scaled_features[:, :22])
 ```
 
 ## 📁 Project Structure
