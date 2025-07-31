@@ -1,7 +1,7 @@
 # import all necessary libraries
 import pandas
-from pandas.tools.plotting import scatter_matrix
-from sklearn import cross_validation
+from pandas.plotting import scatter_matrix
+from sklearn import model_selection
 from sklearn.metrics import matthews_corrcoef
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
@@ -13,6 +13,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.preprocessing import StandardScaler
 
 # load the dataset (local path)
 url = "data.csv"
@@ -26,11 +27,16 @@ array = dataset.values
 X = array[:,0:22]
 # Y stores "answers", the flower species / class (every row, 4th column)
 Y = array[:,22]
+
+# Scale the features for better performance, especially for Neural Network
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
 validation_size = 0.3
 # randomize which part of the data is training and which part is validation
 seed = 7
-# split dataset into training set (80%) and validation set (20%)
-X_train, X_validation, Y_train, Y_validation = cross_validation.train_test_split(X, Y, test_size = validation_size, random_state = seed)
+# split dataset into training set (70%) and validation set (30%)
+X_train, X_validation, Y_train, Y_validation = model_selection.train_test_split(X_scaled, Y, test_size = validation_size, random_state = seed)
 
 # 10-fold cross validation to estimate accuracy (split data into 10 parts; use 9 parts to train and 1 for test)
 num_folds = 10
@@ -45,17 +51,17 @@ models.append(('LR', LogisticRegression()))
 models.append(('LDA', LinearDiscriminantAnalysis()))
 models.append(('KNN', KNeighborsClassifier()))
 models.append(('DT', DecisionTreeClassifier()))
-models.append(('NN', MLPClassifier(solver='lbfgs')))
+models.append(('NN', MLPClassifier(solver='lbfgs', max_iter=1000, random_state=42)))
 models.append(('NB', GaussianNB()))
-models.append(('GB', GradientBoostingClassifier(n_estimators=10000)))
+models.append(('GB', GradientBoostingClassifier(n_estimators=100, random_state=42)))
 
 # evaluate each algorithm / model
 results = []
 names = []
 print("Scores for each algorithm:")
 for name, model in models:
-    kfold = cross_validation.KFold(n = num_instances, n_folds = num_folds, random_state = seed)
-    cv_results = cross_validation.cross_val_score(model, X_train, Y_train, cv = kfold, scoring = scoring)
+    kfold = model_selection.KFold(n_splits = num_folds, random_state = seed, shuffle=True)
+    cv_results = model_selection.cross_val_score(model, X_train, Y_train, cv = kfold, scoring = scoring)
     results.append(cv_results)
     names.append(name)
     model.fit(X_train, Y_train)

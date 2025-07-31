@@ -9,6 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import accuracy_score
 
+
 # load the dataset (local path)
 url = "data.csv"
 # feature names
@@ -27,7 +28,7 @@ validation_size = 0.25
 # randomize which part of the data is training and which part is validation
 seed = 7
 # split dataset into training set (80%) and validation set (20%)
-X_train, X_validation, Y_train, Y_validation = train_test_split(X, Y, test_size = validation_size, random_state = seed)
+X_train, X_validation, Y_train, Y_validation = train_test_split(X, Y, test_size = validation_size, random_state = None)
 print(X_train)
 # 10-fold cross validation to estimate accuracy (split data into 10 parts; use 9 parts to train and 1 for test)
 num_folds = 10
@@ -38,7 +39,9 @@ scoring = 'accuracy'
 
 results = []
 clf = KNeighborsClassifier()
-kfold = sklearn.model_selection.KFold(n_splits=num_instances,random_state = seed)
+# kfold = sklearn.model_selection.KFold(n_splits=num_instances,random_state = seed)
+kfold = sklearn.model_selection.KFold(n_splits=num_folds)
+
 cv_results = cross_val_score(clf, X_train, Y_train, cv = kfold, scoring = scoring)
 clf.fit(X_train, Y_train)
 predictions = clf.predict(X_validation)
